@@ -191,6 +191,8 @@ void CPUInfo::Detect()
       bLAHFSAHF64 = true;
     if ((cpu_id[2] >> 5) & 1)
       bLZCNT = true;
+    if ((cpu_id[2] >> 6) & 1)
+      bSSE4A = true;
     if ((cpu_id[2] >> 16) & 1)
       bFMA4 = true;
     if ((cpu_id[3] >> 29) & 1)
@@ -252,6 +254,8 @@ std::string CPUInfo::Summarize()
     sum += ", SSE4.1";
   if (bSSE4_2)
     sum += ", SSE4.2";
+  if (bSSE4A)
+    sum += ", SSE4A";
   if (HTT)
     sum += ", HTT";
   if (bAVX)
