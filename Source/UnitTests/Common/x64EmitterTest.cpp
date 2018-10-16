@@ -904,6 +904,27 @@ TWO_OP_SSE_TEST(BLENDVPD, "dqword")
 TWO_OP_PLUS_IMM_SSE_TEST(BLENDPS, "dqword")
 TWO_OP_PLUS_IMM_SSE_TEST(BLENDPD, "dqword")
 
+TEST_F(x64EmitterTest, EXTRQ)
+{
+  for (const auto& r : xmmnames)
+  {
+    emitter->EXTRQ(r.reg, 0xa, 0xb);
+    ExpectDisassembly("extrq " + r.name + ", 0x0a, 0x0b");
+  }
+}
+
+TEST_F(x64EmitterTest, INSERTQ)
+{
+  for (const auto& r1 : xmmnames)
+  {
+    for (const auto& r2 : xmmnames)
+    {
+      emitter->INSERTQ(r1.reg, r2.reg, 0xa, 0xb);
+      ExpectDisassembly("insertq " + r1.name + ", " + r2.name + ", 0x0a, 0x0b");
+    }
+  }
+}
+
 // for VEX GPR instructions that take the form op reg, r/m, reg
 #define VEX_RMR_TEST(Name)                                                                         \
   TEST_F(x64EmitterTest, Name)                                                                     \
