@@ -2640,6 +2640,26 @@ void XEmitter::BLENDPD(X64Reg dest, const OpArg& arg, u8 blend)
   Write8(blend);
 }
 
+void XEmitter::WriteSSE4AOp(u8 opPrefix, u16 op, X64Reg regOp, const OpArg& arg, int extrabytes)
+{
+  if (!cpu_info.bSSE4A)
+    PanicAlert("Trying to use SSE4A on a system that doesn't support it. Bad programmer.");
+  WriteSSEOp(opPrefix, op, regOp, arg, extrabytes);
+}
+
+void XEmitter::EXTRQ(X64Reg dest, u8 length, u8 index)
+{
+  WriteSSE4AOp(0x66, 0x78, XMM0, R(dest));
+  Write8(length);
+  Write8(index);
+}
+void XEmitter::INSERTQ(X64Reg dest, X64Reg src, u8 length, u8 index)
+{
+  WriteSSE4AOp(0xF2, 0x78, dest, R(src));
+  Write8(length);
+  Write8(index);
+}
+
 void XEmitter::PAND(X64Reg dest, const OpArg& arg)
 {
   WriteSSEOp(0x66, 0xDB, dest, arg);

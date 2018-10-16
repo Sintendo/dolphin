@@ -354,6 +354,7 @@ private:
   void WriteSSEOp(u8 opPrefix, u16 op, X64Reg regOp, OpArg arg, int extrabytes = 0);
   void WriteSSSE3Op(u8 opPrefix, u16 op, X64Reg regOp, const OpArg& arg, int extrabytes = 0);
   void WriteSSE41Op(u8 opPrefix, u16 op, X64Reg regOp, const OpArg& arg, int extrabytes = 0);
+  void WriteSSE4AOp(u8 opPrefix, u16 op, X64Reg regOp, const OpArg& arg, int extrabytes = 0);
   void WriteVEXOp(u8 opPrefix, u16 op, X64Reg regOp1, X64Reg regOp2, const OpArg& arg, int W = 0,
                   int extrabytes = 0);
   void WriteVEXOp4(u8 opPrefix, u16 op, X64Reg regOp1, X64Reg regOp2, const OpArg& arg,
@@ -845,6 +846,10 @@ public:
   void BLENDVPD(X64Reg dest, const OpArg& arg);
   void BLENDPS(X64Reg dest, const OpArg& arg, u8 blend);
   void BLENDPD(X64Reg dest, const OpArg& arg, u8 blend);
+
+  // SSE4A
+  void EXTRQ(X64Reg dest, u8 length, u8 index);
+  void INSERTQ(X64Reg dest, X64Reg src, u8 length, u8 index);
 
   // AVX
   void VADDSS(X64Reg regOp1, X64Reg regOp2, const OpArg& arg);
