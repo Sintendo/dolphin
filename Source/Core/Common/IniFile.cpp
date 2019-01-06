@@ -96,7 +96,7 @@ void IniFile::Section::SetLines(std::vector<std::string> lines)
   m_lines = std::move(lines);
 }
 
-bool IniFile::Section::GetLines(std::vector<std::string>* lines, const bool remove_comments) const
+bool IniFile::Section::GetLines(std::vector<std::string>& lines, const bool remove_comments) const
 {
   for (const std::string& line : m_lines)
   {
@@ -116,7 +116,7 @@ bool IniFile::Section::GetLines(std::vector<std::string>* lines, const bool remo
       }
     }
 
-    lines->push_back(std::move(stripped_line));
+    lines.push_back(std::move(stripped_line));
   }
 
   return true;
@@ -217,7 +217,7 @@ bool IniFile::GetLines(const std::string& sectionName, std::vector<std::string>*
   if (!section)
     return false;
 
-  return section->GetLines(lines, remove_comments);
+  return section->GetLines(*lines, remove_comments);
 }
 
 void IniFile::SortSections()

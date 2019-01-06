@@ -68,7 +68,7 @@ public:
     }
 
     void SetLines(std::vector<std::string> lines);
-    bool GetLines(std::vector<std::string>* lines, const bool remove_comments = true) const;
+    bool GetLines(std::vector<std::string>& lines, const bool remove_comments = true) const;
 
     bool operator<(const Section& other) const { return name < other.name; }
     using SectionMap = std::map<std::string, std::string, CaseInsensitiveStringCompare>;
