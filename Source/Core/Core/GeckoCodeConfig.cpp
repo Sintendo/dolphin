@@ -136,7 +136,7 @@ std::vector<GeckoCode> LoadCodes(const IniFile& globalIni, const IniFile& localI
   for (const IniFile* ini : {&globalIni, &localIni})
   {
     std::vector<std::string> lines;
-    ini->GetLines("Gecko", &lines, false);
+    ini->GetLines("Gecko", lines, false);
 
     GeckoCode gcode;
 
@@ -191,7 +191,7 @@ std::vector<GeckoCode> LoadCodes(const IniFile& globalIni, const IniFile& localI
       gcodes.push_back(gcode);
     }
 
-    ini->GetLines("Gecko_Enabled", &lines, false);
+    ini->GetLines("Gecko_Enabled", lines, false);
 
     for (const std::string& line : lines)
     {

@@ -127,7 +127,7 @@ public:
 
   void SetLines(const std::string& sectionName, const std::vector<std::string>& lines);
   void SetLines(const std::string& section_name, std::vector<std::string>&& lines);
-  bool GetLines(const std::string& sectionName, std::vector<std::string>* lines,
+  bool GetLines(const std::string& sectionName, std::vector<std::string>& lines,
                 const bool remove_comments = true) const;
 
   bool DeleteKey(const std::string& sectionName, const std::string& key);

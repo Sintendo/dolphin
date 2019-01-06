@@ -263,14 +263,14 @@ void BreakpointWidget::OnLoad()
   }
 
   BreakPoints::TBreakPointsStr new_bps;
-  if (ini.GetLines("BreakPoints", &new_bps, false))
+  if (ini.GetLines("BreakPoints", new_bps, false))
   {
     PowerPC::breakpoints.Clear();
     PowerPC::breakpoints.AddFromStrings(new_bps);
   }
 
   MemChecks::TMemChecksStr new_mcs;
-  if (ini.GetLines("MemoryBreakPoints", &new_mcs, false))
+  if (ini.GetLines("MemoryBreakPoints", new_mcs, false))
   {
     PowerPC::memchecks.Clear();
     Settings::Instance().blockSignals(true);

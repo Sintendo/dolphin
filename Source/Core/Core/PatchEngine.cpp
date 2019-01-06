@@ -51,7 +51,7 @@ void LoadPatchSection(const std::string& section, std::vector<Patch>& patches, I
   std::string enabledSectionName = section + "_Enabled";
   std::vector<std::string> enabledLines;
   std::set<std::string> enabledNames;
-  localIni.GetLines(enabledSectionName, &enabledLines);
+  localIni.GetLines(enabledSectionName, enabledLines);
   for (const std::string& line : enabledLines)
   {
     if (line.size() != 0 && line[0] == '$')
@@ -67,7 +67,7 @@ void LoadPatchSection(const std::string& section, std::vector<Patch>& patches, I
   {
     std::vector<std::string> lines;
     Patch currentPatch;
-    ini->GetLines(section, &lines);
+    ini->GetLines(section, lines);
 
     for (std::string& line : lines)
     {

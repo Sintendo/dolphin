@@ -208,16 +208,16 @@ bool IniFile::GetKeys(const std::string& sectionName, std::vector<std::string>* 
 }
 
 // Return a list of all lines in a section
-bool IniFile::GetLines(const std::string& sectionName, std::vector<std::string>* lines,
+bool IniFile::GetLines(const std::string& sectionName, std::vector<std::string>& lines,
                        const bool remove_comments) const
 {
-  lines->clear();
+  lines.clear();
 
   const Section* section = GetSection(sectionName);
   if (!section)
     return false;
 
-  return section->GetLines(*lines, remove_comments);
+  return section->GetLines(lines, remove_comments);
 }
 
 void IniFile::SortSections()

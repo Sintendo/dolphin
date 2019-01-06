@@ -181,7 +181,7 @@ std::vector<ARCode> LoadCodes(const IniFile& global_ini, const IniFile& local_in
   std::unordered_set<std::string> enabled_names;
   {
     std::vector<std::string> enabled_lines;
-    local_ini.GetLines("ActionReplay_Enabled", &enabled_lines);
+    local_ini.GetLines("ActionReplay_Enabled", enabled_lines);
     for (const std::string& line : enabled_lines)
     {
       if (line.size() != 0 && line[0] == '$')
@@ -199,7 +199,7 @@ std::vector<ARCode> LoadCodes(const IniFile& global_ini, const IniFile& local_in
     std::vector<std::string> encrypted_lines;
     ARCode current_code;
 
-    ini->GetLines("ActionReplay", &lines);
+    ini->GetLines("ActionReplay", lines);
 
     for (const std::string& line : lines)
     {

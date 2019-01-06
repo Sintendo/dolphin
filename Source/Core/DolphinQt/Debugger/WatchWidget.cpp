@@ -210,7 +210,7 @@ void WatchWidget::OnLoad()
     return;
   }
 
-  if (ini.GetLines("Watches", &watches, false))
+  if (ini.GetLines("Watches", watches, false))
   {
     PowerPC::debug_interface.ClearWatches();
     PowerPC::debug_interface.LoadWatchesFromStrings(watches);
