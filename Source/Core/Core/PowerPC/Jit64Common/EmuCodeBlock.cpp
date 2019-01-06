@@ -933,18 +933,34 @@ void EmuCodeBlock::ConvertDoubleToSingle(X64Reg dst, X64Reg src)
 
   // Don't Denormalize
 
-  // We want bits 0, 1
-  MOVSD(XMM1, R(src));
-  PAND(XMM1, MConst(double_top_two_bits));
-  PSRLQ(XMM1, 32);
+  if (cpu_info.bSSE4A)
+  {
+    // Extract bits 0, 1
+    MOVSD(XMM0, R(src));
+    EXTRQ(XMM0, 2, 62);
 
-  // And 5 through to 34
-  MOVSD(XMM0, R(src));
-  PAND(XMM0, MConst(double_bottom_bits));
-  PSRLQ(XMM0, 29);
+    // Extract bits 5 through 34
+    MOVSD(XMM1, R(src));
+    EXTRQ(XMM1, 30, 29);
 
-  // OR them togther
-  POR(XMM1, R(XMM0));
+    // Insert top two bits at the right position
+    INSERTQ(XMM1, XMM0, 2, 30);
+  }
+  else
+  {
+    // We want bits 0, 1
+    MOVSD(XMM1, R(src));
+    PAND(XMM1, MConst(double_top_two_bits));
+    PSRLQ(XMM1, 32);
+
+    // And 5 through to 34
+    MOVSD(XMM0, R(src));
+    PAND(XMM0, MConst(double_bottom_bits));
+    PSRLQ(XMM0, 29);
+
+    // OR them together
+    POR(XMM1, R(XMM0));
+  }
 
   // End
   SetJumpTarget(end);
