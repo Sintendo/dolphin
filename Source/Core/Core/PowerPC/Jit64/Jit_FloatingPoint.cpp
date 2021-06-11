@@ -542,6 +542,19 @@ void Jit64::fselx(UGeckoInstruction inst)
       return;
     }
 
+    if (d != b)
+    {
+      if (packed)
+        MOVAPD(Rd, Rc);
+      else if (Rc.IsSimpleReg())
+        MOVSD(Rd, Rc);
+      else
+        MOVLPD(Rd, Rc);
+
+      BLENDVPD(Rd, Rb);
+      return;
+    }
+
     MOVAPD(XMM1, Rc);
     BLENDVPD(XMM1, Rb);
   }
