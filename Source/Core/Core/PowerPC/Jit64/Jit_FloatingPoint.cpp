@@ -516,17 +516,33 @@ void Jit64::fselx(UGeckoInstruction inst)
 
   if (cpu_info.bAVX)
   {
+    // Prefer BLENDVPD unless VBLENDVPD can eliminate a move.
+    // VBLENDVPD takes one additional μop vs BLENDVPD on Skylake and beyond. AMD and older
+    // architectures don't care.
+
+    if (d == c)
+    {
+      BLENDVPD(Rd, Rb);
+      return;
+    }
+
     X64Reg src1 = XMM1;
     if (Rc.IsSimpleReg())
     {
       src1 = Rc.GetSimpleReg();
+    }
+    else if (d != b && packed)
+    {
+      MOVAPD(Rd, Rc);
+      BLENDVPD(Rd, Rb);
+      return;
     }
     else
     {
       MOVAPD(XMM1, Rc);
     }
 
-    if (d == c || packed)
+    if (packed)
     {
       VBLENDVPD(Rd, src1, Rb, XMM0);
       return;
