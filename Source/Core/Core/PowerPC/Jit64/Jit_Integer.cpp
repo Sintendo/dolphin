@@ -1859,8 +1859,17 @@ void Jit64::subfcx(UGeckoInstruction inst)
     if (d != b)
       MOV(32, Rd, Rb);
 
-    SUB(32, Rd, Imm32(imm));
-    FinalizeCarryOverflow(inst.OE, true);
+    if (imm == 0)
+    {
+      FinalizeCarry(true);
+      if (inst.OE)
+        GenerateConstantOverflow(false);
+    }
+    else
+    {
+      SUB(32, Rd, Imm32(imm));
+      FinalizeCarryOverflow(inst.OE, true);
+    }
   }
   else if (gpr.IsImm(b) && gpr.Imm32(b) == 0)
   {
