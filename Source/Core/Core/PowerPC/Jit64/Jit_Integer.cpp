@@ -1841,6 +1841,15 @@ void Jit64::subfcx(UGeckoInstruction inst)
   JITDISABLE(bJITIntegerOff);
   int a = inst.RA, b = inst.RB, d = inst.RD;
 
+  if (gpr.IsImm(a, b))
+  {
+    const s32 bi = gpr.SImm32(b), ai = gpr.SImm32(a);
+    gpr.SetImmediate32(d, bi - ai);
+    FinalizeCarry(ai == 0 || Interpreter::Helper_Carry((u32)bi, 0u - (u32)ai));
+    if (inst.OE)
+      GenerateConstantOverflow((s64)bi - (s64)ai);
+  }
+  else
   {
     RCOpArg Ra = gpr.Use(a, RCMode::Read);
     RCOpArg Rb = gpr.Use(b, RCMode::Read);
@@ -1860,9 +1869,10 @@ void Jit64::subfcx(UGeckoInstruction inst)
         MOV(32, Rd, Rb);
       SUB(32, Rd, Ra);
     }
+
+    FinalizeCarryOverflow(inst.OE, true);
   }
 
-  FinalizeCarryOverflow(inst.OE, true);
   if (inst.Rc)
     ComputeRC(d);
 }
