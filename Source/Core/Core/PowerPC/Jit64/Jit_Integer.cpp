@@ -1849,6 +1849,19 @@ void Jit64::subfcx(UGeckoInstruction inst)
     if (inst.OE)
       GenerateConstantOverflow((s64)bi - (s64)ai);
   }
+  else if (gpr.IsImm(a))
+  {
+    const u32 imm = gpr.Imm32(a);
+    RCOpArg Rb = gpr.Use(b, RCMode::Read);
+    RCX64Reg Rd = gpr.Bind(d, RCMode::Write);
+    RegCache::Realize(Rb, Rd);
+
+    if (d != b)
+      MOV(32, Rd, Rb);
+
+    SUB(32, Rd, Imm32(imm));
+    FinalizeCarryOverflow(inst.OE, true);
+  }
   else if (gpr.IsImm(b) && gpr.Imm32(b) == 0)
   {
     RCOpArg Ra = gpr.Use(a, RCMode::Read);
