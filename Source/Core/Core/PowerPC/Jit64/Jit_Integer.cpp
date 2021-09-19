@@ -1820,19 +1820,31 @@ void Jit64::addcx(UGeckoInstruction inst)
     RCX64Reg Rd = gpr.Bind(d, RCMode::Write);
     RegCache::Realize(Rj, Rd);
 
-    if (d == j)
+    if (imm == 0)
+    {
+      if (d != j)
+        MOV(32, Rd, Rj);
+
+      FinalizeCarry(false);
+      if (inst.OE)
+        GenerateConstantOverflow(false);
+    }
+    else if (d == j)
     {
       ADD(32, Rd, Imm32(imm));
+      FinalizeCarryOverflow(inst.OE);
     }
     else if (imm >= -128 && imm <= 127)
     {
       MOV(32, Rd, Rj);
       ADD(32, Rd, Imm32(imm));
+      FinalizeCarryOverflow(inst.OE);
     }
     else
     {
       MOV(32, Rd, Imm32(imm));
       ADD(32, Rd, Rj);
+      FinalizeCarryOverflow(inst.OE);
     }
   }
   else
@@ -1852,9 +1864,10 @@ void Jit64::addcx(UGeckoInstruction inst)
         MOV(32, Rd, Rb);
       ADD(32, Rd, Ra);
     }
+
+    FinalizeCarryOverflow(inst.OE);
   }
 
-  FinalizeCarryOverflow(inst.OE);
   if (inst.Rc)
     ComputeRC(d);
 }
