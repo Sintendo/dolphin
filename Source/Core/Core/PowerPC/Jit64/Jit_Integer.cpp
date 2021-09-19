@@ -1812,6 +1812,30 @@ void Jit64::addcx(UGeckoInstruction inst)
   JITDISABLE(bJITIntegerOff);
   int a = inst.RA, b = inst.RB, d = inst.RD;
 
+  if (gpr.IsImm(a) || gpr.IsImm(b))
+  {
+    const auto [i, j] = gpr.IsImm(a) ? std::pair(a, b) : std::pair(b, a);
+    const s32 imm = gpr.SImm32(i);
+    RCOpArg Rj = gpr.Use(j, RCMode::Read);
+    RCX64Reg Rd = gpr.Bind(d, RCMode::Write);
+    RegCache::Realize(Rj, Rd);
+
+    if (d == j)
+    {
+      ADD(32, Rd, Imm32(imm));
+    }
+    else if (imm >= -128 && imm <= 127)
+    {
+      MOV(32, Rd, Rj);
+      ADD(32, Rd, Imm32(imm));
+    }
+    else
+    {
+      MOV(32, Rd, Imm32(imm));
+      ADD(32, Rd, Rj);
+    }
+  }
+  else
   {
     RCOpArg Ra = gpr.Use(a, RCMode::Read);
     RCOpArg Rb = gpr.Use(b, RCMode::Read);
