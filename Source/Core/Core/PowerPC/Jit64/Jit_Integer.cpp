@@ -1235,6 +1235,20 @@ void Jit64::divwux(UGeckoInstruction inst)
         GenerateConstantOverflow(false);
     }
   }
+  else if (gpr.IsImm(a) && gpr.Imm32(a) == 0)
+  {
+    if (inst.OE)
+    {
+      RCOpArg Rb = gpr.Use(b, RCMode::Read);
+      RegCache::Realize(Rb);
+
+      CMP_or_TEST(32, Rb, Imm32(0));
+      GenerateOverflow(CC_NZ);
+    }
+
+    // Zero divided by anything is always zero
+    gpr.SetImmediate32(d, 0);
+  }
   else if (gpr.IsImm(b))
   {
     u32 divisor = gpr.Imm32(b);
