@@ -1051,6 +1051,8 @@ void Jit64::MultiplyImmediate(u32 imm, int a, int d, bool overflow)
   if (imm == 0)
   {
     XOR(32, Rd, Rd);
+    if (overflow)
+      GenerateOverflow();
     return;
   }
 
@@ -1059,6 +1061,8 @@ void Jit64::MultiplyImmediate(u32 imm, int a, int d, bool overflow)
     if (d != a)
       MOV(32, Rd, Ra);
     NEG(32, Rd);
+    if (overflow)
+      GenerateOverflow();
     return;
   }
 
@@ -1099,6 +1103,8 @@ void Jit64::MultiplyImmediate(u32 imm, int a, int d, bool overflow)
 
   // if we didn't find any better options
   IMUL(32, Rd, Ra, Imm32(imm));
+  if (overflow)
+    GenerateOverflow();
 }
 
 void Jit64::mulli(UGeckoInstruction inst)
@@ -1136,8 +1142,6 @@ void Jit64::mullwx(UGeckoInstruction inst)
     u32 imm = gpr.IsImm(a) ? gpr.Imm32(a) : gpr.Imm32(b);
     int src = gpr.IsImm(a) ? b : a;
     MultiplyImmediate(imm, src, d, inst.OE);
-    if (inst.OE)
-      GenerateOverflow();
   }
   else
   {
