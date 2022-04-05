@@ -1193,16 +1193,32 @@ void Jit64::mulhwXx(UGeckoInstruction inst)
     // we can ensure IMUL always gets a register or memory location.
     const auto [i, j] = gpr.IsSimpleReg(a) ? std::pair(b, a) : std::pair(a, b);
 
-    RCOpArg Ri = gpr.Use(i, RCMode::Read);
-    RCOpArg Rj = gpr.Use(j, RCMode::Read);
-    RCX64Reg Rd = gpr.Bind(d, RCMode::Write);
     RCX64Reg eax = gpr.Scratch(EAX);
     RCX64Reg edx = gpr.Scratch(EDX);
-    RegCache::Realize(Ri, Rj, Rd, eax, edx);
 
-    MOV(32, eax, Ri);
-    IMUL(32, Rj);
-    MOV(32, Rd, edx);
+    // This is done in parts to avoid potentially undesirable RegCache behavior when
+    // d == a or d == b.
+
+    {
+      RCOpArg Ri = gpr.Use(i, RCMode::Read);
+      // Guaranteed to not be an immediate at this point
+      RCOpArg Rj = gpr.Use(j, RCMode::Read);
+      RegCache::Realize(eax, edx, Ri, Rj);
+
+      // Prepare EAX for the multiplication
+      MOV(32, eax, Ri);
+
+      // Implicitly reads from EAX and writes to EAX and EDX
+      IMUL(32, Rj);
+    }
+
+    {
+      RCX64Reg Rd = gpr.Bind(d, RCMode::Write);
+      RegCache::Realize(Rd);
+
+      // Move result into destination
+      MOV(32, Rd, edx);
+    }
   }
   else
   {
