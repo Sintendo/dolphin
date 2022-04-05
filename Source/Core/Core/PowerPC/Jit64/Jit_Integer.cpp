@@ -1186,15 +1186,22 @@ void Jit64::mulhwXx(UGeckoInstruction inst)
   }
   else if (sign)
   {
-    RCOpArg Ra = gpr.Use(a, RCMode::Read);
-    RCOpArg Rb = gpr.UseNoImm(b, RCMode::Read);
+    // Ensure the immediate is in i if there is one.
+    //
+    // There may still be an immediate in either a or b (but not both as that case is handled
+    // above). However, one-operand IMUL does not accept immediates. By carefully swapping a and b
+    // we can ensure IMUL always gets a register or memory location.
+    const auto [i, j] = gpr.IsSimpleReg(a) ? std::pair(b, a) : std::pair(a, b);
+
+    RCOpArg Ri = gpr.Use(i, RCMode::Read);
+    RCOpArg Rj = gpr.Use(j, RCMode::Read);
     RCX64Reg Rd = gpr.Bind(d, RCMode::Write);
     RCX64Reg eax = gpr.Scratch(EAX);
     RCX64Reg edx = gpr.Scratch(EDX);
-    RegCache::Realize(Ra, Rb, Rd, eax, edx);
+    RegCache::Realize(Ri, Rj, Rd, eax, edx);
 
-    MOV(32, eax, Ra);
-    IMUL(32, Rb);
+    MOV(32, eax, Ri);
+    IMUL(32, Rj);
     MOV(32, Rd, edx);
   }
   else
